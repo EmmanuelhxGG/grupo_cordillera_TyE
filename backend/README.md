@@ -49,14 +49,14 @@ El proyecto utiliza una estrategia avanzada de **Multi-stage Build** en Docker. 
 
 Además, la base de datos `db_postgres` cuenta con un **Healthcheck**, garantizando que los microservicios esperen a que PostgreSQL esté 100% saludable antes de intentar conectarse.
 
-### Instrucciones:
-1. Asegúrate de tener **Docker Engine** en ejecución.
+### Instrucciones (Conectado a AWS RDS):
+1. Asegúrate de tener las bases de datos creadas manualmente en tu servidor AWS RDS (`ms_datos`, `ms_reportes`, `ms_auth`).
 2. Abre una terminal en este directorio (`/backend`).
 3. Ejecuta el comando mágico de orquestación:
    ```bash
    docker-compose up --build -d
    ```
-4. El sistema levantará 5 contenedores interconectados (`db_postgres`, `ms-datos`, `ms-kpis`, `ms-reportes`, `ms-auth`).
+4. El sistema levantará los 4 contenedores interconectados (`ms-datos`, `ms-kpis`, `ms-reportes`, `ms-auth`), y todos viajarán por internet para leer/escribir en la nube de Amazon.
 
 Para apagar todo el ecosistema de forma segura y liberar la red, simplemente ejecuta:
 ```bash

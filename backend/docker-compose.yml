@@ -1,24 +1,6 @@
 version: '3.8'
 
 services:
-  db_postgres:
-    image: postgres:15-alpine
-    container_name: db_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   ms-datos:
     build:
       context: ./ms-datos
@@ -27,12 +9,9 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_postgres:5432/ms_datos
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-    depends_on:
-      db_postgres:
-        condition: service_healthy
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://bd-grupo-cordillera.cfyh1qtodg3d.us-east-1.rds.amazonaws.com:5432/ms_datos
+      - SPRING_DATASOURCE_USERNAME=admin3
+      - SPRING_DATASOURCE_PASSWORD=cordillera
 
   ms-kpis:
     build:
@@ -42,12 +21,9 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_postgres:5432/ms_datos
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-    depends_on:
-      db_postgres:
-        condition: service_healthy
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://bd-grupo-cordillera.cfyh1qtodg3d.us-east-1.rds.amazonaws.com:5432/ms_datos
+      - SPRING_DATASOURCE_USERNAME=admin3
+      - SPRING_DATASOURCE_PASSWORD=cordillera
 
   ms-reportes:
     build:
@@ -57,12 +33,9 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_postgres:5432/ms_reportes
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-    depends_on:
-      db_postgres:
-        condition: service_healthy
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://bd-grupo-cordillera.cfyh1qtodg3d.us-east-1.rds.amazonaws.com:5432/ms_reportes
+      - SPRING_DATASOURCE_USERNAME=admin3
+      - SPRING_DATASOURCE_PASSWORD=cordillera
 
   ms-auth:
     build:
@@ -72,12 +45,6 @@ services:
     ports:
       - "8084:8084"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db_postgres:5432/ms_auth
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-    depends_on:
-      db_postgres:
-        condition: service_healthy
-
-volumes:
-  postgres_data:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://bd-grupo-cordillera.cfyh1qtodg3d.us-east-1.rds.amazonaws.com:5432/ms_auth
+      - SPRING_DATASOURCE_USERNAME=admin3
+      - SPRING_DATASOURCE_PASSWORD=cordillera
