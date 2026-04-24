@@ -20,22 +20,32 @@ Aunque la teoría estricta sugiere *Database-per-service* (4 BDs para 4 microser
 
 Cada microservicio se despliega en un puerto interno único para evitar colisiones y expone su propio grupo de operaciones RESTful.
 
-### 1. Gestión de Datos Organizacionales (`ms-datos`) - Puerto 8081
+### 1. Backend for Frontend (`ms-bff`) - Puerto 8080
+Punto único de entrada para el frontend. Centraliza autenticación, agregación de dashboard y orquestación de llamadas a los microservicios internos.
+- `POST /api/bff/auth/login`: Devuelve token y metadatos del usuario.
+- `GET /api/bff/auth/validar`: Valida el token contra `ms-auth`.
+- `GET /api/bff/dashboard`: Agrega ventas, KPIs y alertas.
+- `GET /api/bff/ventas`: Expone el listado consolidado de ventas.
+- `GET /api/bff/kpis`: Expone los KPIs calculados.
+- `POST /api/bff/reportes/plantillas`: Crea una plantilla de reporte.
+- `DELETE /api/bff/reportes/plantillas/{id}`: Elimina lógicamente una plantilla.
+
+### 2. Gestión de Datos Organizacionales (`ms-datos`) - Puerto 8081
 Encargado de la ingesta centralizada desde los 5 sistemas legados del Grupo Cordillera.
 - `POST /api/ventas/registrar`: Ingesta un nuevo registro de venta (Añade fecha automática).
 - `GET /api/ventas`: Lista todos los registros ingestados.
 
-### 2. Motor de KPIs (`ms-kpis`) - Puerto 8082
+### 3. Motor de KPIs (`ms-kpis`) - Puerto 8082
 Lee información en crudo desde la BD consolidada y ejecuta el motor matemático de los indicadores clave.
 - `GET /api/kpis`: Retorna los indicadores pre-calculados.
 - `PUT /api/kpis/{id}/formula`: Actualiza la fórmula matemática de un indicador específico.
 
-### 3. Visualización de Reportes (`ms-reportes`) - Puerto 8083
+### 4. Visualización de Reportes (`ms-reportes`) - Puerto 8083
 Responsable del formato visual que consumirá el Frontend (BFF).
 - `POST /api/reportes/plantillas`: Genera una nueva plantilla de dashboard.
 - `DELETE /api/reportes/plantillas/{id}`: Ejecuta un borrado lógico (cambio de estado a Inactivo) de un reporte.
 
-### 4. Seguridad y Autenticación (`ms-auth`) - Puerto 8084
+### 5. Seguridad y Autenticación (`ms-auth`) - Puerto 8084
 Gobierna el control de acceso basado en roles (RBAC) simulando la emisión de tokens JWT.
 - `POST /api/auth/login`: Valida credenciales y genera Token JWT.
 - `GET /api/auth/validar`: Verifica la vigencia de un token.
@@ -56,7 +66,7 @@ Además, la base de datos `db_postgres` cuenta con un **Healthcheck**, garantiza
    ```bash
    docker-compose up --build -d
    ```
-4. El sistema levantará los 4 contenedores interconectados (`ms-datos`, `ms-kpis`, `ms-reportes`, `ms-auth`), y todos viajarán por internet para leer/escribir en la nube de Amazon.
+4. El sistema levantará los 5 contenedores interconectados (`ms-bff`, `ms-datos`, `ms-kpis`, `ms-reportes`, `ms-auth`), y el frontend debe consumir únicamente `ms-bff` como entrada.
 
 Para apagar todo el ecosistema de forma segura y liberar la red, simplemente ejecuta:
 ```bash

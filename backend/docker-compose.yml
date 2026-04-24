@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  ms-bff:
+    build:
+      context: ./ms-bff
+      dockerfile: Dockerfile
+    container_name: ms-bff
+    ports:
+      - "8080:8080"
+    environment:
+      - BFF_AUTH_BASE_URL=http://ms-auth:8084/api/auth
+      - BFF_DATOS_BASE_URL=http://ms-datos:8081/api/ventas
+      - BFF_KPIS_BASE_URL=http://ms-kpis:8082/api/kpis
+      - BFF_REPORTES_BASE_URL=http://ms-reportes:8083/api/reportes/plantillas
+
   ms-datos:
     build:
       context: ./ms-datos
@@ -48,3 +61,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://bd-grupo-cordillera.cfyh1qtodg3d.us-east-1.rds.amazonaws.com:5432/ms_auth
       - SPRING_DATASOURCE_USERNAME=admin3
       - SPRING_DATASOURCE_PASSWORD=cordillera
+
+  fronted-cordillera:
+    build:
+      context: ../fronted-cordillera
+      dockerfile: Dockerfile
+    container_name: fronted-cordillera
+    ports:
+      - "5173:80"
+    depends_on:
+      - ms-bff
